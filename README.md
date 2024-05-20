@@ -52,7 +52,7 @@ This project automates the reporting requirements of the Care Act 2014 using a c
 
 
 
-##Project structure
+## Project structure
 ```
 care_assessment_report/
 │
@@ -75,4 +75,9 @@ care_assessment_report/
 │ └── footer_image.png
 ├── .env
 └── requirements.txt
+```
+
+to run the script
+```
+python main.py
 ```
