@@ -12,32 +12,7 @@ def setup_document_style(doc, config):
     doc.preamble.append(Package('geometry', options='top=3cm, bottom=3cm, left=2.5cm, right=2.5cm'))
     doc.preamble.append(Package('graphicx'))
 
-    header = PageStyle("header")
-    with header.create(Head("L")):
-        header_image_path = normalize_path(config['HEADER_IMAGE'])
-        with MiniPage(width=r"0.49\textwidth", pos='c'):
-            header.append(StandAloneGraphic(header_image_path, width=r"0.9\textwidth"))
-    with header.create(Head("R")):
-        with MiniPage(width=r"0.49\textwidth", pos='c'):
-            header.append(r"\today")
-
-    footer = PageStyle("footer")
-    with footer.create(Foot("C")):
-        footer_image_path = normalize_path(config['FOOTER_IMAGE'])
-        with MiniPage(width=r"0.6\textwidth", pos='c'):
-            footer.append(StandAloneGraphic(footer_image_path, width=r"0.9\textwidth"))
-
-    doc.preamble.append(header)
-    doc.preamble.append(footer)
-    doc.change_document_style("header")
-
-    doc.preamble.append(Command('setlength', '\\headheight', '60pt'))
-    doc.preamble.append(Command('setlength', '\\footskip', '40pt'))
-    doc.preamble.append(Command('setlength', '\\headsep', '20pt'))
-    doc.preamble.append(Command('setlength', '\\textheight', '680pt'))
-
-    doc.preamble.append(NoEscape(r'\fancypagestyle{plain}{\fancyhf{}\fancyhead[L]{\includegraphics[width=4cm]{%s}}\fancyfoot[C]{\includegraphics[width=4cm]{%s}}}' % (header_image_path, footer_image_path)))
-    doc.preamble.append(Command('pagestyle', 'plain'))
+   
 
 def include_graphs(doc, filename_base, column, timeframe):
     """Include graphs into the LaTeX document based on available types."""
