@@ -53,24 +53,26 @@ This project automates the reporting requirements of the Care Act 2014 using a c
 
 
 ##Project structure
+```
 care_assessment_report/
 │
 ├── main.py
 ├── config/
-│   └── config_loader.py
+│ └── config_loader.py
 ├── data/
-│   └── data_loader.py
+│ └── data_loader.py
 ├── insights/
-│   └── insights_generator.py
+│ └── insights_generator.py
 ├── reporting/
-│   └── report_generator.py
+│ └── report_generator.py
 ├── email/
-│   └── email_sender.py
+│ └── email_sender.py
 ├── utils/
-│   ├── logging_setup.py
-│   └── latex_helper.py
+│ ├── logging_setup.py
+│ └── latex_helper.py
 ├── resources/
-│   ├── header_image.png
-│   └── footer_image.png
+│ ├── header_image.png
+│ └── footer_image.png
 ├── .env
 └── requirements.txt
+```
