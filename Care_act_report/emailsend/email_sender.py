@@ -9,9 +9,8 @@ class EmailSender:
         self.config = config
 
     def send_email(self, pdf_path, recipient_email, pdf_filename, body_content):
-        """Send email with PDF attachment."""
         msg = MIMEMultipart()
-        msg['From'] = self.config.SMTP_USER
+        msg['From'] = self.config['smtp_user']
         msg['To'] = recipient_email
         msg['Subject'] = 'Care Assessment Report'
 
@@ -27,10 +26,10 @@ class EmailSender:
             return
 
         try:
-            server = smtplib.SMTP(self.config.SMTP_SERVER, self.config.SMTP_PORT)
+            server = smtplib.SMTP(self.config['smtp_server'], self.config['smtp_port'])
             server.starttls()
-            server.login(self.config.SMTP_USER, self.config.SMTP_PASSWORD)
-            server.sendmail(self.config.SMTP_USER, recipient_email, msg.as_string())
+            server.login(self.config['smtp_user'], self.config['smtp_password'])
+            server.sendmail(self.config['smtp_user'], recipient_email, msg.as_string())
             server.quit()
             logging.info(f"Email sent to {recipient_email}")
         except Exception as e:
