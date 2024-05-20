@@ -1,17 +1,15 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from pylatex import Document, Section, Command, Package, Figure
-from utils.latex_helper import setup_document_style, include_graphs, normalize_path
+from pylatex import Document, Figure, Package, Command, NoEscape, Section
 import os
-import logging
 import subprocess
+import logging
 
 class ReportGenerator:
     def __init__(self, config):
         self.config = config
 
-    def plot_graphs(self, df, filename_base, timeframe):
-        """Plot graphs for each column and save as images."""
+    def plot_graphs(self, df, filename_base):
         color_palette = ['#9d1d7f', '#283162', '#00ffff', '#e4245e']
 
         for column in df.columns.difference(['Timestamp']):
@@ -21,7 +19,7 @@ class ReportGenerator:
             plt.xlabel('Time')
             plt.ylabel(f'{column}')
             plt.grid(True)
-            plt.savefig(f'{filename_base}_{column}_{timeframe}_line.png')
+            plt.savefig(f'{filename_base}_{column}_line.png')
             plt.close()
 
         plt.figure(figsize=(12, 6))
@@ -32,13 +30,12 @@ class ReportGenerator:
         plt.ylabel('Scores')
         plt.legend(df.columns.difference(['Timestamp']), loc='upper left')
         plt.grid(True)
-        plt.savefig(f'{filename_base}_overall_trend_{timeframe}.png')
+        plt.savefig(f'{filename_base}_overall_trend.png')
         plt.close()
 
-    def generate_latex_report(self, name, insights, filename_base, timeframe):
-        """Generate LaTeX report with dynamic content and graphs."""
+    def generate_latex_report(self, name, insights, filename_base):
         doc = Document(document_options='10pt, a4paper', documentclass='article')
-        setup_document_style(doc, self.config)
+        self._setup_document_style(doc)
 
         doc.preamble.append(Command('title', f'{name} Care Assessment Report'))
         doc.preamble.append(Command('author', 'Automated Analysis System'))
@@ -47,33 +44,35 @@ class ReportGenerator:
 
         with doc.create(Section('Introduction and Basic Information')):
             doc.append(f"This report provides an assessment of {name}'s current care needs based on recent data.")
-            overall_trend_path = os.path.join(self.config['IMAGE_DIR'], f"{filename_base}_overall_trend_{timeframe}.png")
+            overall_trend_path = f"{filename_base}_overall_trend.png"
             if os.path.exists(overall_trend_path):
-                doc.append(NoEscape(r'\begin{figure}[H]'))
-                doc.append(NoEscape(r'\centering'))
-                doc.append(NoEscape(r'\includegraphics[width=0.8\textwidth]{%s}' % normalize_path(overall_trend_path)))
-                doc.append(NoEscape(r'\caption{Overall Trend of All Columns}'))
-                doc.append(NoEscape(r'\end{figure}'))
-
-            if 'Frailty score' in insights:
-                with doc.create(Section('Executive Summary: Insight on Frailty score')):
-                    doc.append(insights['Frailty score'])
-                    include_graphs(doc, filename_base, 'Frailty score', timeframe)
+                with doc.create(Figure(position='H')) as fig:
+                    fig.add_image(overall_trend_path, width=NoEscape(r'0.8\textwidth'))
+                    fig.add_caption('Overall Trend of All Columns')
 
         for column, insight_text in insights.items():
-            if column != 'Frailty score':
-                renamed_column = column.replace('Clothed', 'Being appropriately clothed').replace('Out of home', 'Out of home score')
-                with doc.create(Section(f'Insight on {renamed_column}')):
-                    doc.append(insight_text)
-                    include_graphs(doc, filename_base, column, timeframe)
+            renamed_column = column.replace('Clothed', 'Being appropriately clothed').replace('Out of home', 'Out of home score')
+            with doc.create(Section(f'Insight on {renamed_column}')):
+                doc.append(insight_text)
+                self._include_graph(doc, filename_base, column)
 
         doc.append(NoEscape(r'\end{document}'))
-        tex_filename = os.path.join(self.config['REPORT_DIR'], f"{name}_Care_Assessment_Report.tex")
-        doc.generate_tex(normalize_path(tex_filename))
-        return normalize_path(tex_filename)
+        tex_filename = f"{self.config['report_dir']}/{name}_Care_Assessment_Report.tex"
+        doc.generate_tex(tex_filename)
+        return tex_filename
+
+    def _setup_document_style(self, doc):
+        doc.preamble.append(Package('geometry', options='top=3cm, bottom=3cm, left=2.5cm, right=2.5cm'))
+        doc.preamble.append(Package('graphicx'))
+
+    def _include_graph(self, doc, filename_base, column):
+        graph_filename = f"{filename_base}_{column}_line.png"
+        if os.path.exists(graph_filename):
+            with doc.create(Figure(position='H')) as fig:
+                fig.add_image(graph_filename, width=NoEscape(r'0.8\textwidth'))
+                fig.add_caption(f'Line graph of {column} over time')
 
     def compile_latex_to_pdf(self, tex_file_path):
-        """Compile LaTeX document to PDF."""
         directory, tex_file = os.path.split(tex_file_path + '.tex')
         command = ["xelatex", "-interaction=nonstopmode", tex_file]
         try:
