@@ -2,16 +2,17 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 class DataLoader:
-    @staticmethod
-    def load_details(file_path):
-        """Load details from an Excel file."""
-        return pd.read_excel(file_path)
+    def __init__(self, config):
+        self.config = config
 
-    @staticmethod
-    def load_and_prepare_data(file_path, timeframe):
-        """Load and preprocess data based on the specified timeframe."""
+    def load_details(self):
+        return pd.read_excel(self.config['details_path'])
+
+    def load_and_prepare_data(self, file_path):
         df = pd.read_excel(file_path)
         df['Timestamp'] = pd.to_datetime(df['Timestamp'])
+        timeframe = self.config['report_timeframe']
+
         if timeframe == 'yesterday':
             yesterday = datetime.now() - timedelta(days=1)
             df = df[df['Timestamp'].dt.date == yesterday.date()]
@@ -26,4 +27,5 @@ class DataLoader:
             df = df.resample('6ME', on='Timestamp').mean()
         elif timeframe == 'yearly':
             df = df.resample('1Y', on='Timestamp').mean()
+
         return df
