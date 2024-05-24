@@ -67,9 +67,6 @@ care_assessment_report/
 │ └── report_generator.py
 ├── email/
 │ └── email_sender.py
-├── utils/
-│ ├── logging_setup.py
-│ └── latex_helper.py
 ├── resources/
 │ ├── header_image.png
 │ └── footer_image.png
