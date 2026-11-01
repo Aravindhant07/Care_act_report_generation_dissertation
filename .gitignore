@@ -158,3 +158,12 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+# Project-specific
+# Chroma vector store - rebuilt on every run by insights_generator.py
+Care_act_report/db/
+# Generated output
+Care_act_report/images/
+Care_act_report/report/
+*.aux
+*.out

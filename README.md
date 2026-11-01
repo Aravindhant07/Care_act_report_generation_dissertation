@@ -1,80 +1,101 @@
 # Care Assessment Report Automation
 
-## Introduction
-This project automates the reporting requirements of the Care Act 2014 using a combination of IoT devices, advanced data processing, and AI-driven insights. The system, called Doris Pro, monitors the well-being of individuals under care, collecting data in real-time and generating detailed reports that provide valuable insights for care providers and regulatory bodies.
+MSc Data Science dissertation project (University of Roehampton, 2024).
+
+Automates the well-being reporting required under the **UK Care Act 2014**. Sensor data from *Doris Pro* IoT devices is turned into a personalised PDF care-assessment report for each person, with AI-written insights, and emailed to the right contact. No manual work is needed.
+
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue) ![LangChain](https://img.shields.io/badge/LangChain-RAG-green) ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-412991) ![LaTeX](https://img.shields.io/badge/Reports-LaTeX-008080)
+
+## How it works
+
+```
+Frailty score data (.xlsx)
+        │
+        ▼
+ DataLoader ──► clean & normalise readings per well-being domain
+        │       (nutrition, hygiene, toilet needs, safe home, relationships ...)
+        ▼
+ InsightGenerator ──► RAG pipeline: Chroma vector store of Care Act guidance
+        │             + GPT-3.5 → empathetic, score-aware insights per domain
+        ▼
+ ReportGenerator ──► trend charts (seaborn) + LaTeX → PDF report
+        ▼
+ EmailSender ──► SMTP delivery to each person's contact
+```
 
 ## Features
-- **IoT Device Integration**: Utilizes Doris Pro devices for continuous monitoring of various health and environmental parameters.
-- **Data Processing**: Employs Python for data cleaning, normalization, and analysis.
-- **Insight Generation**: Integrates OpenAI's GPT models enhanced with Retrieval-Augmented Generation (RAG) to produce contextually rich and accurate reports.
-- **Report Generation**: Uses LaTeX to generate professionally formatted reports.
-- **Automated Email Distribution**: Automatically sends generated reports to stakeholders via email.
 
-## Installation
-
-### Prerequisites
-- Python 3.8 or higher
-- Required Python packages (listed in `requirements.txt`)
-- LaTeX distribution (e.g., TeX Live, MiKTeX)
-- Doris Pro IoT devices
-- SMTP server credentials for email distribution
-
-### Setup
-1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/yourusername/care-assessment-report.git
-    cd care-assessment-report
-    ```
-
-2. **Install the required packages**:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3. **Configure environment variables**:
-   - Create a `.env` file in the root directory and add the following:
-     ```
-     DETAILS_PATH=path/to/details.xlsx
-     BASE_DATA_PATH=path/to/data/files
-     IMAGE_DIR=path/to/save/images
-     REPORT_DIR=path/to/save/reports
-     HEADER_IMAGE=path/to/header_image.png
-     FOOTER_IMAGE=path/to/footer_image.png
-     SMTP_PASSWORD=your_smtp_password
-     Directory=path/to/documents
-     Log=path/to/logs
-     OPENAI_API_KEY=your_openai_api_key
-     ```
-
-4. **Ensure the necessary directories exist**:
-   ```bash
-   mkdir -p path/to/save/images path/to/save/reports path/to/logs
-
-
+- **IoT data ingestion:** reads time-stamped scores for nine Care Act well-being domains.
+- **Retrieval-Augmented Generation:** grounds GPT output in reference documents, so the insights stay on topic and cite the actual scores.
+- **Professional reports:** a LaTeX template with header and footer branding, plus a chart for each domain and an overall trend chart.
+- **Automated distribution:** each report is emailed to the address listed for that person in `Details.xlsx`.
 
 ## Project structure
+
 ```
-care_assessment_report/
-│
-├── main.py
-├── config/
-│ └── config_loader.py
-├── data/
-│ └── data_loader.py
-├── insights/
-│ └── insights_generator.py
-├── reporting/
-│ └── report_generator.py
-├── email/
-│ └── email_sender.py
-├── resources/
-│ ├── header_image.png
-│ └── footer_image.png
-├── .env
+Care_act_report/
+├── main.py                     # Orchestrates the pipeline for every person
+├── config/config.py            # Loads settings from environment variables (.env)
+├── data/data_loader.py         # Reads and prepares the Excel data
+├── insights/insights_generator.py  # LangChain + Chroma RAG insights
+├── reporting/report_generator.py   # Charts + LaTeX/PDF report
+├── emailsend/email_sender.py   # SMTP email delivery
+├── Frailty score data/         # Sample sensor data for testing
+├── Details.xlsx                # Person → data file → email mapping (sample)
+├── Retrival_data/              # Reference documents for the RAG store
+├── resources/                  # Report header/footer images
 └── requirements.txt
 ```
 
-to run the script
+## Getting started
+
+### Prerequisites
+- Python 3.8+
+- A LaTeX distribution (TeX Live or MiKTeX) with `pdflatex` on your PATH
+- An OpenAI API key
+- An SMTP account for sending email (for Gmail, use an [App Password](https://support.google.com/accounts/answer/185833))
+
+### Setup
+
+```bash
+git clone https://github.com/Aravindhant07/Care_act_report_generation_dissertation.git
+cd Care_act_report_generation_dissertation/Care_act_report
+pip install -r requirements.txt
 ```
+
+Create a `.env` file in `Care_act_report/`. It is git-ignored, so keep secrets here only:
+
+```ini
+OPENAI_API_KEY=your_openai_api_key
+SMTP_USER=you@example.com
+SMTP_PASSWORD=your_app_password
+DETAILS_PATH=Details.xlsx
+BASE_DATA_PATH=Frailty score data
+Directory=Retrival_data
+IMAGE_DIR=images
+REPORT_DIR=report
+HEADER_IMAGE=resources/header.png
+FOOTER_IMAGE=resources/footer.png
+Log=logs
+```
+
+```bash
+mkdir -p images report logs
 python main.py
 ```
+
+The Chroma vector store (`db/`) is rebuilt automatically on each run.
+
+> **Note:** ChromaDB needs SQLite 3.35 or newer. If your system's SQLite is older, run `pip install pysqlite3-binary`.
+
+## Tech stack
+
+Python · pandas · seaborn/matplotlib · LangChain · ChromaDB · OpenAI GPT-3.5 · PyLaTeX · SMTP
+
+## Data
+
+The files in `Frailty score data/` are sample data for testing. The email addresses in `Details.xlsx` are placeholders.
+
+## License
+
+[Mozilla Public License 2.0](LICENSE)

@@ -11,7 +11,7 @@ class ConfigLoader:
             'report_dir': os.getenv('REPORT_DIR'),
             'smtp_server': 'smtp.gmail.com',
             'smtp_port': 587,
-            'smtp_user': 'aravindhant7@gmail.com',
+            'smtp_user': os.getenv('SMTP_USER'),
             'smtp_password': os.getenv('SMTP_PASSWORD'),
             'header_image': os.getenv('HEADER_IMAGE'),
             'footer_image': os.getenv('FOOTER_IMAGE'),
