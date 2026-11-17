@@ -4,7 +4,7 @@ MSc Data Science dissertation project (University of Roehampton, 2024).
 
 Automates the well-being reporting required under the **UK Care Act 2014**. Sensor data from *Doris Pro* IoT devices is turned into a personalised PDF care-assessment report for each person, with AI-written insights, and emailed to the right contact. No manual work is needed.
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue) ![LangChain](https://img.shields.io/badge/LangChain-RAG-green) ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-412991) ![LaTeX](https://img.shields.io/badge/Reports-LaTeX-008080)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue) ![LangChain](https://img.shields.io/badge/LangChain-RAG-green) ![OpenAI](https://img.shields.io/badge/OpenAI-GPT--3.5-412991) ![LaTeX](https://img.shields.io/badge/Reports-LaTeX-008080)
 
 ## How it works
 
@@ -50,7 +50,7 @@ Care_act_report/
 ## Getting started
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.10+
 - A LaTeX distribution (TeX Live or MiKTeX) with `pdflatex` on your PATH
 - An OpenAI API key
 - An SMTP account for sending email (for Gmail, use an [App Password](https://support.google.com/accounts/answer/185833))
@@ -77,6 +77,8 @@ REPORT_DIR=report
 HEADER_IMAGE=resources/header.png
 FOOTER_IMAGE=resources/footer.png
 Log=logs
+# Optional: override the chat model (default gpt-3.5-turbo)
+# OPENAI_MODEL=gpt-4o-mini
 ```
 
 ```bash
