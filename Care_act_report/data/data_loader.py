@@ -26,6 +26,6 @@ class DataLoader:
         elif timeframe == 'half-yearly':
             df = df.resample('6ME', on='Timestamp').mean()
         elif timeframe == 'yearly':
-            df = df.resample('1Y', on='Timestamp').mean()
+            df = df.resample('1YE', on='Timestamp').mean()
 
         return df
